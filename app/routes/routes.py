@@ -20,4 +20,4 @@ def index():
 
 @app.route('/api/v1.0/bucketize', methods=['GET', 'POST'])
 def bucketize():
-    return jsonify({'text':request.values})
+    return request.values
