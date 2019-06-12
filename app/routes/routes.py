@@ -51,7 +51,7 @@ def upload_shape():
             copied_shapes = 'error'
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            final_folder = '/Users/jame9353/Documents/temp_data/bucketize/shapes'
+            final_folder = r'D:\shapes'
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             if filename.endswith(".zip"):
@@ -86,7 +86,7 @@ def upload_elev():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             if filename.endswith(".zip"):
-                final_folder = '/Users/jame9353/Documents/temp_data/bucketize/elevation'
+                final_folder = r'D:\elevation'
                 dirname = unzip.unzip_file(filename)
                 copied_elev = move_files.copy_directory(dirname,final_folder, "Upload Elevation")
 
@@ -113,7 +113,7 @@ def upload_raster():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             if filename.endswith(".zip"):
-                final_folder = '/Users/jame9353/Documents/temp_data/bucketize/raster'
+                final_folder = r'D:\raster'
                 dirname = unzip.unzip_file(filename)
                 copied_raster = move_files.copy_directory(dirname,final_folder, "Upload Raster")
 
