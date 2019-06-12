@@ -1,6 +1,9 @@
 from app import app
 from flask import jsonify, request, send_from_directory, flash, redirect, url_for
 from werkzeug.utils import secure_filename
+from bs4 import BeautifulSoup
+from random import randint
+from googlesearch import search
 
 from app.scripts import process_netowl
 
@@ -14,6 +17,7 @@ import sys
 jobs = {}
 
 netowl_key = os.environ.get('NETOWL_KEY')
+urllib3.disable_warnings()
 
 ALLOWED_EXTENSIONS = set(['doc', 'docx', 'txt', 'htm', 'html', 'pdf'])
 
@@ -59,6 +63,52 @@ def netowl_doc():
                         nonspatial_entities.append(vars(entity))
 
                 return jsonify(spatial_entities)
+
+                os.remove(uploaded_file)
+                os.remove(os.path.join(final_folder, filename +'.json'))
                 
     except Exception as e:
         return str(e)
+
+@app.route('/api/v1.0/google-netowl', methods=['POST'])
+def google_netowl():
+    try:
+        for j in search(request.form['query'], tld="com", num=int(request.form['results']), stop=10, pause=2):
+            count +=1
+            r = requests.get(j)
+            soup = BeautifulSoup(r.content, features="lxml")
+
+            soup_list = [s.extract() for s in soup(['style', 'script', '[document]', 'head', 'title'])]
+            visible_text = soup.getText()
+
+            final_folder = '/Users/jame9353/Documents/temp_data/bucketize/json'
+            filename = request.form['query'].replace(" ", "_") + str(randint(1,1000))
+            text_file_path = os.path.join(final_folder, filename + '.txt')
+            with open(text_file_path, 'w', encoding='utf-8') as text_file:
+                print_text = cleanup_text(visible_text)
+                text_file.write(print_text)
+                text_file.close()
+
+            process_netowl.netowl_curl(text_file_path, final_folder, ".json", netowl_key)
+
+            with open(text_file_path + ".json", 'rb') as json_file:
+                data = json.load(json_file)
+
+                entity_list, links_list, events_list = process_netowl.process_netowl_json(filename, data)
+
+                spatial_entities = []
+                nonspatial_entities = []
+
+                for entity in entity_list:
+                    if entity.geo_entity == True:
+                        spatial_entities.append(vars(entity))
+                    else:
+                        nonspatial_entities.append(vars(entity))
+
+                return jsonify(spatial_entities)
+
+            os.remove(text_file_path)
+            os.remove(text_file_path + ".json")
+
+    except Exception as e:
+        return str(e)    
