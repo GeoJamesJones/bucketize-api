@@ -37,7 +37,7 @@ def add_user():
             group.add_users(target_user.username)
 
         # update user properties
-        return jsonify(target_user)
+        return "{} successfully added!".format(username)
     
     except Exception as e:
         return str(e)
