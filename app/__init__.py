@@ -13,4 +13,4 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.logger.info("Starting API...")
 
-from app.routes import routes
+from app.routes import routes, admin_routes
