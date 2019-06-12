@@ -14,7 +14,6 @@ import json
 import string
 import urllib3
 import sys
-import asyncio
 
 ALLOWED_EXTENSIONS = set(['zip'])
 
