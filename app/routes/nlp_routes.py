@@ -47,7 +47,7 @@ def netowl_doc():
                 with open(os.path.join(final_folder, filename +'.json'), 'rb') as json_file:
                     data = json.load(json_file)
 
-                """entity_list, links_list, events_list = process_netowl.process_netowl_json(file.filename, data)
+                entity_list, links_list, events_list = process_netowl.process_netowl_json(file.filename, data)
 
                 spatial_entities = []
                 nonspatial_entities = []
@@ -56,9 +56,9 @@ def netowl_doc():
                     if entity.geo_entity == True:
                         spatial_entities.append(vars(entity))
                     else:
-                        nonspatial_entities.append(vars(entity))"""
+                        nonspatial_entities.append(vars(entity))
 
-                return data
+                return jsonify(spatial_entities)
                 
     except Exception as e:
         return str(e)
