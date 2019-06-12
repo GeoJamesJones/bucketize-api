@@ -11,8 +11,9 @@ import sys
 
 gis_username = os.environ.get('gis_username')
 target_password = os.environ.get('gis_password')
+gis_url = os.environ.get('gis_url')
 
-target_portal = GIS("https://wdcdefense.esri.com/portal", gis_username, target_password)
+target_portal = GIS(gis_url, gis_username, target_password)
 
 @app.route('/api/v1.0/add-user', methods=['POST'])
 def add_user():

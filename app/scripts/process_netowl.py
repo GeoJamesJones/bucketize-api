@@ -1,3 +1,10 @@
+import requests
+import os
+import json
+import string
+import urllib3
+import sys
+
 class NetOwl_Entity:
     """Class to hold entities extracted from NetOwl API"""
     
@@ -117,7 +124,7 @@ class Text_Item:
         return json.dumps(self, default=lambda o: o.__dict__, 
             sort_keys=True, indent=4)
 
-def process_netowl_json(document_file, json_data, web_url, query_string, category):
+def process_netowl_json(document_file, json_data):
     doc_entities = []
     doc_links = []
     doc_events = []
@@ -219,9 +226,6 @@ def process_netowl_json(document_file, json_data, web_url, query_string, categor
                     if 'tail' in em:
                         base_entity['tail'] = get_tail(content, int(em['tail']), 255)
 
-                base_entity['doc_link'] = web_url
-                base_entity['query'] = query_string
-                base_entity['category'] = category
 
                 # Turns entity information into a class object for storage and transformation
                 netowl_entity_object = NetOwl_Entity(base_entity)
@@ -332,7 +336,7 @@ def process_netowl_json(document_file, json_data, web_url, query_string, categor
                 
         return doc_entities, doc_links, doc_events
 
-def netowl_curl(infile, outpath, outextension, netowl_key):
+def netowl_curl(infile, outextension, netowl_key):
     """Do James Jones code to query NetOwl API."""
     headers = {
         'accept': 'application/json',  # 'application/rdf+xml',
@@ -353,13 +357,8 @@ def netowl_curl(infile, outpath, outextension, netowl_key):
                              headers=headers, params=params, data=data,
                              verify=False)
 
-    r = response.text
-    outpath = outpath
-    filename = os.path.split(infile)[1]
-    if os.path.exists(outpath) is False:
-        os.mkdir(outpath, mode=0o777, )
-    outfile = os.path.join(outpath, filename + outextension)
-    open(outfile, "w", encoding="utf-8").write(r)
+    r = json.dumps(response.text) 
+    return r
 
 def cleanup_text(intext):
     """Function to remove funky chars."""
