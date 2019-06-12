@@ -336,7 +336,7 @@ def process_netowl_json(document_file, json_data):
                 
         return doc_entities, doc_links, doc_events
 
-def netowl_curl(infile, outextension, netowl_key):
+def netowl_curl(infile, outpath, outextension, netowl_key):
     """Do James Jones code to query NetOwl API."""
     headers = {
         'accept': 'application/json',  # 'application/rdf+xml',
@@ -357,8 +357,13 @@ def netowl_curl(infile, outextension, netowl_key):
                              headers=headers, params=params, data=data,
                              verify=False)
 
-    r = json.dumps(response.text) 
-    return r
+    r = response.text
+    outpath = outpath
+    filename = os.path.split(infile)[1]
+    if os.path.exists(outpath) is False:
+        os.mkdir(outpath, mode=0o777, )
+    outfile = os.path.join(outpath, filename + outextension)
+    open(outfile, "w", encoding="utf-8").write(r)
 
 def cleanup_text(intext):
     """Function to remove funky chars."""

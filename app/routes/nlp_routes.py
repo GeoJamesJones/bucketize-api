@@ -39,10 +39,14 @@ def netowl_doc():
                 return redirect(request.url)
             
             if file and allowed_file(file.filename):
+                final_folder = '/Users/jame9353/Documents/temp_data/bucketize/json'
                 filename = secure_filename(file.filename)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 uploaded_file = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                data = process_netowl.netowl_curl(uploaded_file, ".json", netowl_key)
+                process_netowl.netowl_curl(uploaded_file, final_folder, ".json", netowl_key)
+                with open(os.path.join(final_folder, filename +'.json'), 'rb') as json_file:
+                    data = json.load(json_file)
+
                 """entity_list, links_list, events_list = process_netowl.process_netowl_json(file.filename, data)
 
                 spatial_entities = []
