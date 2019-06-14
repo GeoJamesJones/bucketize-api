@@ -65,6 +65,12 @@ def register():
 def index():
     return render_template('index.html', title='WDC Integration API')
 
+
+@app.route('/ease-of-use')
+@login_required
+def ease_of_use():
+    return render_template('ease-of-use.html')
+
 @app.route('/user/<username>')
 @login_required
 def user(username):
