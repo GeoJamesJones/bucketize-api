@@ -1,12 +1,13 @@
 from app import app
 
-from flask import jsonify, request, send_from_directory, flash, redirect, url_for
+from flask import jsonify, request, send_from_directory, flash, redirect, url_for, render_template
 from googlesearch import search
 from bs4 import BeautifulSoup
 from werkzeug.utils import secure_filename
 
 from app.scripts import unzip
 from app.scripts import move_files
+#from app.scripts import consolidate_elevation
 
 import requests
 import os
@@ -18,11 +19,6 @@ import sys
 ALLOWED_EXTENSIONS = set(['zip'])
 
 jobs = {}
-
-@app.route('/')
-@app.route('/index')
-def index():
-    return "Hello, World!"
 
 @app.route('/api/v1.0/job-info', methods=['GET'])
 def job_info():
@@ -40,7 +36,7 @@ def upload_shape():
         # check if the post request has the file part
         if 'file' not in request.files:
             flash('No file part')
-            copied_shapes = 'error'
+            copied_shapes = 'Please submit files as a ZIP file.'
             return redirect(request.url)
         file = request.files['file']
         # if user does not select file, browser also
@@ -88,6 +84,7 @@ def upload_elev():
                 final_folder = '/Users/jame9353/Documents/temp_data/bucketize/elevation'
                 dirname = unzip.unzip_file(filename)
                 copied_elev = move_files.copy_directory(dirname,final_folder, "Upload Elevation")
+                #copied_elev = consolidate_elevation.consolidate_elevation(dirname, )
 
 
     jobs[job_number] = copied_elev

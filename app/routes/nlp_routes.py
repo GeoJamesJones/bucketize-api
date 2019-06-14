@@ -51,7 +51,7 @@ def netowl_doc():
                 with open(os.path.join(final_folder, filename +'.json'), 'rb') as json_file:
                     data = json.load(json_file)
 
-                entity_list, links_list, events_list = process_netowl.process_netowl_json(file.filename, data)
+                entity_list = process_netowl.process_netowl_json(file.filename, data)
 
                 spatial_entities = []
                 nonspatial_entities = []
@@ -74,9 +74,8 @@ def netowl_doc():
 def google_netowl():
     try:
         for j in search(request.form['query'], tld="com", num=int(request.form['results']), stop=10, pause=2):
-            count +=1
             r = requests.get(j)
-            soup = BeautifulSoup(r.content, features="lxml")
+            soup = BeautifulSoup(r.content, features="html.parser")
 
             soup_list = [s.extract() for s in soup(['style', 'script', '[document]', 'head', 'title'])]
             visible_text = soup.getText()
@@ -85,7 +84,7 @@ def google_netowl():
             filename = request.form['query'].replace(" ", "_") + str(randint(1,1000))
             text_file_path = os.path.join(final_folder, filename + '.txt')
             with open(text_file_path, 'w', encoding='utf-8') as text_file:
-                print_text = cleanup_text(visible_text)
+                print_text = process_netowl.cleanup_text(visible_text)
                 text_file.write(print_text)
                 text_file.close()
 
@@ -94,7 +93,7 @@ def google_netowl():
             with open(text_file_path + ".json", 'rb') as json_file:
                 data = json.load(json_file)
 
-                entity_list, links_list, events_list = process_netowl.process_netowl_json(filename, data)
+                entity_list = process_netowl.process_netowl_json(filename, data)
 
                 spatial_entities = []
                 nonspatial_entities = []

@@ -40,90 +40,6 @@ class NetOwl_Entity:
         else:
             self.geo_entity = False
 
-    def toJSON(self):
-        """Method to turn class into JSON object"""
-        return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
-
-class NetOwl_Link:
-    """Class to hold links extracted from NetOwl API"""
-    
-    def __init__(self, value_dict=None): 
-        """Docstring."""
-        
-        if 'value' in value_dict:
-            self.value = value_dict['value']
-        if 'norm' in value_dict:
-            self.norm = value_dict['norm']
-        if 'ontology' in value_dict:
-            self.ontology = value_dict['ontology']
-        if 'role' in value_dict:
-            self.role = value_dict['role']
-        if 'role-type' in value_dict:
-            self.role_type = value_dict['role-type']
-        if 'role' in value_dict:
-            self.link_role = value_dict['link-role']
-        if 'role-type' in value_dict:
-            self.link_role_type = value_dict['link-role-type']
-        if 'value' in value_dict:
-            self.link_value = value_dict['link-value']
-        if 'value-type' in value_dict:
-            self.link_value_type = value_dict['link-value-type']
-        if 'idref' in value_dict:
-            self.link_id = value_dict['link-id']
-        if 'ent-ontology' in value_dict:
-            self.ent_ontology = value_dict['ent-ontology']
-        if 'link-ontology' in value_dict:
-            self.link_ontology = value_dict['link-ontology']
-            
-    def toJSON(self):
-        """Method to turn class into JSON object"""
-        return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
-    
-class NetOwl_Event:
-    """Class object to hold events extracted by the NetOwl API"""
-    
-    def __init__(self, value_dict=None): 
-        """Docstring."""
-        
-        self.event_role = value_dict['event-role']
-        self.event_value = value_dict['event-value']
-        self.event_value_type = value_dict['event-value-type']
-        self.event_id = value_dict['event-id']
-        self.predicate = value_dict['predicate']
-        self.ent_ontology = value_dict['ent-ontology']
-            
-        if 'triple' in value_dict:
-            self.arg_role = value_dict['arg-role']
-            self.arg_value = value_dict['arg-value']
-            self.arg_value_type = value_dict['arg-value-type']
-            self.arg_id = value_dict['arg-id']
-            self.arg_ontology = value_dict['arg-ontology']
-            self.triple = value_dict['triple']
-        else:
-            self.triple = False
-            
-    def toJSON(self):
-        """Method to turn class into JSON object"""
-        return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
-
-class Text_Item:
-    """Class to hold text content derived from NetOwl API"""
-    
-    
-    def __init__(self, doc_id=None, text_content=None): 
-        """Docstring."""
-        self.id = doc_id
-        self.content = text_content
-        
-        
-    def toJSON(self):
-        """Method to turn class into JSON object"""
-        return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
-
 def process_netowl_json(document_file, json_data):
     doc_entities = []
     doc_links = []
@@ -132,12 +48,9 @@ def process_netowl_json(document_file, json_data):
     # Open main portion of output NetOwl JSON
     if 'document' in json_data:
         document = json_data['document'][0]
-                    
-        # Extract source text that is embedded in NetOwl JSON and save it as a Text_Item class object
+
         if 'text' in document:
             content = document['text'][0]['content']
-                        
-            content_object = Text_Item(doc_id=document_file, text_content=content)
                         
         if 'entity' in document:
             # Build entity objects
@@ -230,111 +143,8 @@ def process_netowl_json(document_file, json_data):
                 # Turns entity information into a class object for storage and transformation
                 netowl_entity_object = NetOwl_Entity(base_entity)
                 doc_entities.append(netowl_entity_object)
-
-                # Returns extracted links from the entity
-                if 'link-ref' in e:
-                    base_entity['has_links'] = True
-
-                    base_link = {}
-
-                    base_link['id'] = rdfid
-
-                    if 'value' in e:
-                        base_link['value'] = e['value']
-                    if 'norm' in e:
-                        base_link['norm'] = e['norm']
-                    link_ref = e['link-ref']
-                    for link in link_ref:
-                        if 'ontology' in link:
-                            base_link['ontology'] = link['ontology']
-                        if 'role' in link:
-                            base_link['role'] = link['role']
-                        if 'role-type' in link:
-                            base_link['role-type'] = link['role-type']
-                        if 'role' in link['entity-arg'][0]:
-                            base_link['link-role'] = link['entity-arg'][0]['role']
-                        if 'role-type' in link['entity-arg'][0]:
-                            base_link['link-role-type'] = link['entity-arg'][0]['role-type']
-                        if 'value' in link['entity-arg'][0]:
-                            base_link['link-value'] = link['entity-arg'][0]['value']
-                        if 'value-type' in link['entity-arg'][0]:
-                            base_link['link-value-type'] = link['entity-arg'][0]['value-type']
-                        if 'idref' in link['entity-arg'][0]:
-                            base_link['link-id'] = document_file.split(".")[0] + "_e_" + link['entity-arg'][0]['idref']
-                        if 'ontology' in link:
-                            base_link['link-ontology'] = link['entity-arg'][0]['ontology']
-                            base_link['ent-ontology'] = e['ontology']
-
-                        netowl_link_object = NetOwl_Link(base_link)
-                        doc_links.append(netowl_link_object)
-            
-        # Determines if there are extracted links in the document
-        if 'link' in document:
-            links = (document['link'])
-            for link in links:
-                base_link = {}
                 
-                base_link['ontology'] = link['ontology']
-                entity_arg1 = link['entity-arg'][0]
-                entity_arg2 = link['entity-arg'][1]
-                
-                base_link['role'] = entity_arg1['role']
-                base_link['role-type'] = entity_arg1['role-type']
-                base_link['value'] = entity_arg1['value']
-                base_link['role'] = entity_arg1['role']
-                base_link['id'] = document_file.split(".")[0] + "_e_" + entity_arg1['idref']
-                base_link['ent-ontology'] = entity_arg1['ontology']
-                base_link['link-role'] = entity_arg2['role']
-                base_link['link-role-type'] = entity_arg2['role']
-                base_link['link-value'] = entity_arg2['value']
-                base_link['link-value-type'] = entity_arg2['value-type']
-                base_link['link-id'] = document_file.split(".")[0] + "_e_" + entity_arg2['idref']
-                base_link['link-ontology'] = entity_arg2['ontology']
-                
-                netowl_link_object = NetOwl_Link(base_link)
-                doc_links.append(netowl_link_object)
-
-        # Determines if there are extracted events in the document
-        if 'event' in document:
-            events = (document['event'])
-            for event in events:
-                base_event = {}
-                
-                event_args = event['entity-arg']
-                event_properties = event['property'][0]
-                    
-                
-                base_event['event-role'] = event_args[0]['role']
-                base_event['event-value'] = event_args[0]['value']
-                base_event['event-value-type'] = event_args[0]['value-type']
-                base_event['event-id'] = document_file.split(".")[0] + "_e_" + event_args[0]['idref']
-                base_event['ent-ontology'] = event_args[0]['ontology']
-                base_event['predicate'] = event_properties['value']
-                
-                if len(event['entity-arg']) > 1:
-                    count = 0
-                    for arg in event_args:
-                        count +=1
-                        if count == 1:
-                            pass
-                        else:
-                            arg_dict = base_event.copy()
-                            event_arg = event['entity-arg'][1]
-                            arg_dict['arg-role'] = arg['role']
-                            arg_dict['arg-value'] = arg['value']
-                            arg_dict['arg-value-type'] = arg['value-type']
-                            arg_dict['arg-id'] = document_file.split(".")[0] + "_e_" + arg['idref']
-                            arg_dict['arg-ontology'] = arg['ontology']
-                            arg_dict['triple'] = True
-                    
-                            netowl_event_object = NetOwl_Event(arg_dict)
-                            doc_events.append(netowl_event_object)
-
-                else:
-                    netowl_event_object = NetOwl_Event(base_event)
-                    doc_events.append(netowl_event_object)
-                
-        return doc_entities, doc_links, doc_events
+        return doc_entities
 
 def netowl_curl(infile, outpath, outextension, netowl_key):
     """Do James Jones code to query NetOwl API."""
