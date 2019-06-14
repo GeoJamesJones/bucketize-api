@@ -1,9 +1,13 @@
+import os
+
 from datetime import datetime
 from flask import jsonify, request, send_from_directory, flash, redirect, url_for, render_template
-from flask_login import current_user, login_user, login_required
+from flask_login import current_user, login_user, login_required, logout_user
+from werkzeug.urls import url_parse
+from werkzeug.utils import secure_filename
 
 from app import app, db
-from app.forms.forms import LoginForm, RegistrationForm
+from app.forms.forms import LoginForm, RegistrationForm, UploadForm
 from app.models.models import User
 
 @app.before_request
@@ -63,3 +67,16 @@ def user(username):
         {'author': user, 'body': 'Test post #2'}
     ]
     return render_template('user.html', user=user, posts=posts)
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    form = UploadForm()
+    if form.validate_on_submit():
+        f = form.upload.data
+        filename = secure_filename(f.filename)
+        f.save(os.path.join(
+            app.config['UPLOAD_FOLDER'], 'documents', filename
+        ))
+        return redirect(url_for('index'))
+
+    return render_template('upload.html', form=form)
