@@ -1,4 +1,6 @@
 import os
+import urllib3
+import json
 
 from datetime import datetime
 from flask import jsonify, request, send_from_directory, flash, redirect, url_for, render_template
@@ -7,8 +9,13 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 
 from app import app, db
+from app.scripts import process_netowl
 from app.forms.forms import LoginForm, RegistrationForm, UploadForm
-from app.models.models import User
+from app.models.models import User, Post
+
+from config import Config
+
+urllib3.disable_warnings()
 
 @app.before_request
 def before_request():
@@ -62,10 +69,7 @@ def index():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'}
-    ]
+    posts = ""
     return render_template('user.html', user=user, posts=posts)
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -77,6 +81,34 @@ def upload():
         f.save(os.path.join(
             app.config['UPLOAD_FOLDER'], 'documents', filename
         ))
-        return redirect(url_for('index'))
+        post_body = "Document: " + filename
+        post = Post(body=post_body, author=current_user)
+        db.session.add(post)
+        
+        final_folder = '/Users/jame9353/Documents/temp_data/bucketize/json'
+        uploaded_file = os.path.join(app.config['UPLOAD_FOLDER'], 'documents', filename)
+        process_netowl.netowl_curl(uploaded_file, final_folder, ".json", app.config['NETOWL_KEY'])
+        with open(os.path.join(final_folder, filename +'.json'), 'rb') as json_file:
+            data = json.load(json_file)
+
+        entity_list = process_netowl.process_netowl_json(f.filename, data)
+
+        spatial_entities = []
+        nonspatial_entities = []
+
+        for entity in entity_list:
+            if entity.geo_entity == True:
+                spatial_entities.append(vars(entity))
+            else:
+                nonspatial_entities.append(vars(entity))
+
+        os.remove(uploaded_file)
+        os.remove(os.path.join(final_folder, filename +'.json'))
+
+        db.session.commit()
+
+        return jsonify(spatial_entities)
+
+        #return redirect(url_for('index'))
 
     return render_template('upload.html', form=form)

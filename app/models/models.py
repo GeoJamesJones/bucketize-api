@@ -4,26 +4,14 @@ from app import db, login
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
-followers = db.Table(
-    'followers',
-    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
-)
-
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    queries = db.relationship('NetOwl_Entity', backref='author', lazy='dynamic')
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
-    followed = db.relationship(
-        'User', secondary=followers,
-        primaryjoin=(followers.c.follower_id == id),
-        secondaryjoin=(followers.c.followed_id == id),
-        backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -39,25 +27,6 @@ class User(UserMixin, db.Model):
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
             digest, size)
 
-    def follow(self, user):
-        if not self.is_following(user):
-            self.followed.append(user)
-
-    def unfollow(self, user):
-        if self.is_following(user):
-            self.followed.remove(user)
-
-    def is_following(self, user):
-        return self.followed.filter(
-            followers.c.followed_id == user.id).count() > 0
-
-    def followed_posts(self):
-        followed = Post.query.join(
-            followers, (followers.c.followed_id == Post.user_id)).filter(
-                followers.c.follower_id == self.id)
-        own = Post.query.filter_by(user_id=self.id)
-        return followed.union(own).order_by(Post.timestamp.desc())
-
 
 @login.user_loader
 def load_user(id):
@@ -72,3 +41,19 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
+
+class NetOwl_Entity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    geoentity = db.Column(db.String(10))
+    geosubtype = db.Column(db.String(25))
+    geotype = db.Column(db.String(25))
+    entity_id = db.Column(db.String(140))
+    lat = db.Column(db.Float)
+    lon = db.Column(db.Float)
+    norm = db.Column(db.String(255))
+    ontology = db.Column(db.String(125))
+    pretext = db.Column(db.String(255))
+    value = db.Column(db.String(255))
+    posttext = db.Column(db.String(255))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
