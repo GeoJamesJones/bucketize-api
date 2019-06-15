@@ -11,8 +11,6 @@ from logging.handlers import RotatingFileHandler
 
 from config import Config
 
-UPLOAD_FOLDER = r'/Users/jame9353/Documents/temp_data/bucketize'
-
 app = Flask(__name__)
 app.config.from_object(Config)
 login = LoginManager(app)
@@ -20,7 +18,6 @@ login.login_view = 'login'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 bootstrap = Bootstrap(app)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 app.logger.info("Starting API...")
 

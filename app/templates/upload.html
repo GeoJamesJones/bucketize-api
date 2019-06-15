@@ -1,12 +1,11 @@
 {% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
-{% block content %}
-    <form method="POST" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.upload.label }}<br>
-            {{ form.upload(size=32) }}<br>
-        </p>
-        <p>{{ form.submit() }}</p>
-    </form>
+{% block app_content %}
+    <h1>Upload Data</h1>
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form) }}
+        </div>
+    </div>
 {% endblock %}

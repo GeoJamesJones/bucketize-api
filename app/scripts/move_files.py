@@ -13,7 +13,7 @@ def copy_directory(input_directory, out_directory, job_type):
         try:
             for dirname in dirnames:
                 source_dir = os.path.join(root, dirname)
-                shutil.copy(source_dir, out_directory)
+                os.mkdir(os.path.join(out_directory, dirname))
                 app.logger.info("Successfully copied {}".format(dirname))
         except Exception as e:
             app.logger.error(str(e))
@@ -29,6 +29,6 @@ def copy_directory(input_directory, out_directory, job_type):
             error_files.append(file)
 
 
-    return {"job-type":job_type,"copied-files":copied_files, "error-files":error_files}
+    return {"jobtype":job_type,"copiedfiles":copied_files, "errorfiles":error_files}
             
     

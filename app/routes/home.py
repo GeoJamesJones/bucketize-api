@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 from app import app, db
 from app.scripts import process_netowl
 from app.forms.forms import LoginForm, RegistrationForm, UploadForm
-from app.models.models import User, Post
+from app.models.models import User, Post, NetOwl_Entity
 
 from config import Config
 
@@ -69,13 +69,13 @@ def index():
 @app.route('/ease-of-use')
 @login_required
 def ease_of_use():
-    return render_template('ease-of-use.html')
+    return render_template('base_map.html')
 
 @app.route('/user/<username>')
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    posts = ""
+    posts = user.posts.order_by(Post.timestamp.desc())
     return render_template('user.html', user=user, posts=posts)
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -105,6 +105,22 @@ def upload():
         for entity in entity_list:
             if entity.geo_entity == True:
                 spatial_entities.append(vars(entity))
+                """try:
+                    no_entity = NetOwl_Entity(
+                            geoentity=entity['geo_entity'],
+                            geosubtype=entity['geo_subtype'],
+                            geotype=entity['geo_type'],
+                            entity_id=entity['id'],
+                            lat=entity['lat'],
+                            lon=entity['long'],
+                            norm=entity['norm'],
+                            ontology=entity['ontology'],
+                            pretext=entity['pre_text'],
+                            value=entity['value'],
+                            posttext=entity['post_text'],
+                            user_id=current_user)
+                except Exception as e:
+                    return str(e)"""
             else:
                 nonspatial_entities.append(vars(entity))
 
@@ -113,7 +129,7 @@ def upload():
 
         db.session.commit()
 
-        return jsonify(spatial_entities)
+        return render_template('results.html', query=spatial_entities)
 
         #return redirect(url_for('index'))
 

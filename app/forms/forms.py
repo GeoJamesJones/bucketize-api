@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_uploads import UploadSet
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField, SelectField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
 from app.models.models import User
 
@@ -35,3 +35,10 @@ class UploadForm(FlaskForm):
     ])
     submit = SubmitField('Upload File')
 
+class UploadShapes(FlaskForm):
+    upload = FileField('ZIP File: ', validators=[
+        FileRequired()
+    ])
+    myChoices = [('Shapefile', 'Shapefile'), ('Elevation', 'Elevation Data')]
+    datatype = SelectField(u'Field name', choices=myChoices)
+    submit = SubmitField('Upload File')

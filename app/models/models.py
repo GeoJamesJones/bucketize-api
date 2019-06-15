@@ -27,6 +27,10 @@ class User(UserMixin, db.Model):
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
             digest, size)
 
+    def followed_posts(self):
+        own = Post.query.filter_by(user_id=self.id).order_by(Post.timestamp.desc())
+        return own
+
 
 @login.user_loader
 def load_user(id):

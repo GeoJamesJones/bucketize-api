@@ -1,15 +1,12 @@
 <table>
     <tr valign="top">
-        <td><img src="{{ post.author.avatar(36) }}"></td>
-        <td> Entity ID:<br>{{ query.entity_id }}</td>
-        <td> Spatial Entity:<br>{{ query.geoentity }}</td>
-        <td> Entity Type:<br>{{ query.geotype }}</td>
-        <td> Subtype:<br>{{ query.geosubtype }}</td>
-        <td> Latitude:<br>{{ query.lat }}</td>
-        <td> Longitude:<br>{{ query.lon }}</td>
-        <td> Context:<br>{{ query.pretext }}<br>{{ query.value }}<br>{{ query.posttext }}</td>
-        <td> Normalized Entity:<br>{{ query.norm }}</td>
-        <td> Extracted Time:<br>{{ query.timestamp }}</td>
-        <td> User:<br>{{ query.user_id }}</td>
+        <p> Entity ID:<br>{{ q.id }}</p><br>
+        <p> Spatial Entity:<br>{{ q.geo_entity }}</p><br>
+        <p> Entity Type:<br>{{ q.geo_type }}</p><br>
+        <p> Subtype:<br>{{ q.geo_subtype }}</p><br>
+        <p> Latitude:<br>{{ q.lat }}</p><br>
+        <p> Longitude:<br>{{ q.long }}</p><br>
+        <p> Context:<br>{{ q.pre_text }}<br>{{ q.value }}<br>{{ q.post_text }}</p><br>
+        <p> Normalized Entity:<br>{{ query.norm }}</p><br>
     </tr>
 </table>

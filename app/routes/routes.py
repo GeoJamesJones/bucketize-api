@@ -1,6 +1,7 @@
-from app import app
+from app import app, db
 
 from flask import jsonify, request, send_from_directory, flash, redirect, url_for, render_template
+from flask_login import current_user, login_user, login_required, logout_user
 from googlesearch import search
 from bs4 import BeautifulSoup
 from werkzeug.utils import secure_filename
@@ -9,6 +10,8 @@ from werkzeug.utils import secure_filename
 from app.scripts import unzip
 from app.scripts import move_files
 #from app.scripts import consolidate_elevation
+from app.forms.forms import UploadShapes
+from app.models.models import Post
 
 import requests
 import os
@@ -47,7 +50,7 @@ def upload_shape():
             copied_shapes = 'error'
             return redirect(request.url)
         if file and allowed_file(file.filename):
-            final_folder = '/Users/jame9353/Documents/temp_data/bucketize/shapes'
+            final_folder = app.config['SHAPE_FINAL_FOLDER']
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             if filename.endswith(".zip"):
@@ -82,7 +85,7 @@ def upload_elev():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             if filename.endswith(".zip"):
-                final_folder = '/Users/jame9353/Documents/temp_data/bucketize/elevation'
+                final_folder = app.config['ELEV_FINAL_FOLDER']
                 dirname = unzip.unzip_file(filename)
                 copied_elev = move_files.copy_directory(dirname,final_folder, "Upload Elevation")
                 #copied_elev = consolidate_elevation.consolidate_elevation(dirname, )
@@ -117,7 +120,41 @@ def upload_raster():
         jobs[job_number] = copied_raster
         return jsonify(copied_raster)
 
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'],
-                               filename)
+@app.route('/uploads/shapes', methods=['POST', 'GET'])
+def form_upload_shapes():
+    form = UploadShapes()
+    if form.validate_on_submit():
+        if form.datatype.data == 'Shapefile':
+            f = form.upload.data
+            filename = secure_filename(f.filename)
+            f.save(os.path.join(
+                app.config['UPLOAD_FOLDER'], 'shapefiles', filename
+            ))
+            post_body = "Shapefiles: " + filename
+            post = Post(body=post_body, author=current_user)
+            db.session.add(post)
+            db.session.commit()
+            final_folder = app.config['SHAPE_FINAL_FOLDER']
+            dirname = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], 'shapefiles', filename))
+            copied_shapes = move_files.copy_directory(dirname,final_folder, "Upload Shapefiles")
+
+            #return jsonify(copied_shapes)
+            return render_template('job_results.html', job=copied_shapes)
+        elif form.datatype.data == "Elevation":
+            f = form.upload.data
+            filename = secure_filename(f.filename)
+            f.save(os.path.join(
+                app.config['UPLOAD_FOLDER'], 'elev', filename
+            ))
+            post_body = "Elevation Data: " + filename
+            post = Post(body=post_body, author=current_user)
+            db.session.add(post)
+            db.session.commit()
+            final_folder = app.config['ELEV_FINAL_FOLDER']
+            dirname = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], 'elev', filename))
+            copied_elev = move_files.copy_directory(dirname,final_folder, "Upload Elevation")
+            #copied_elev = consolidate_elevation.consolidate_elevation(dirname, )
+
+            #return jsonify(copied_shapes)
+            return render_template('job_results.html', job=copied_elev)
+    return render_template('upload.html', form=form)
