@@ -1,4 +1,6 @@
 {% extends 'bootstrap/base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% import "bootstrap/fixes.html" as fixes %}
 
 {% block title %}
     {% if title %}{{ title }} - Home{% else %}Welcome to WDC Integration API{% endif %}
@@ -19,10 +21,21 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('index') }}">Home</a></li>
-                    <li><a href="{{ url_for('upload') }}">Upload Document</a></li>
-                    <li><a href="{{ url_for('form_upload_shapes') }}">Upload Files</a></li>
                     <li><a href="{{ url_for('ease_of_use') }}">Map</a></li>
                 </ul>
+
+                <ul class="nav navbar-nav navbar-left">
+                    <li class="dropdown">
+                            <button class="navbar dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Upload
+                            </button>
+                            <button class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="{{ url_for('upload') }}">Upload Document</a>
+                                <a class="dropdown-item" href="{{ url_for('form_upload_shapes') }}">Upload Files</a>
+                            </button>
+                        </li>
+                    </ul>
+
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_anonymous %}
                     <li><a href="{{ url_for('login') }}">Login</a></li>

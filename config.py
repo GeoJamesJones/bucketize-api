@@ -9,4 +9,5 @@ class Config(object):
     UPLOAD_FOLDER = r'/Users/jame9353/Documents/temp_data/bucketize/temp'
     SHAPE_FINAL_FOLDER = '/Users/jame9353/Documents/temp_data/bucketize/shapes'
     ELEV_FINAL_FOLDER = '/Users/jame9353/Documents/temp_data/bucketize/elevation'
+    NETOWL_FINAL_FOLDER = '/Users/jame9353/Documents/temp_data/bucketize/json'
     
