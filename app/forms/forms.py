@@ -50,3 +50,6 @@ class UploadImagery(FlaskForm):
     myChoices = [('cadrg', 'CADRG/ECRG'), ('cib', 'CIB'), ('imagery', 'Imagery')]
     datatype = SelectField(u'Field name', choices=myChoices)
     submit = SubmitField('Upload File')
+
+class GetBrokenLinks(FlaskForm):
+    submit = SubmitField('Submit')

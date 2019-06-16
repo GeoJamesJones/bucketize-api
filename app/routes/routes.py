@@ -9,7 +9,8 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 
 from app import app, db
-from app.scripts import process_netowl, unzip, move_files, consolidate_rasters
+from app.scripts import process_netowl, unzip, move_files
+#from app.scripts import consolidate_rasters
 from app.forms.forms import LoginForm, RegistrationForm, UploadForm, UploadShapes, UploadImagery
 from app.models.models import User, Post, NetOwl_Entity
 

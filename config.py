@@ -17,4 +17,7 @@ class Config(object):
     CADRG_MOSAIC = ''
     CIB_MOSAIC = ''
     IMAGERY_MOSAIC = ''
+    GIS_USERNAME = os.environ.get('gis_username')
+    GIS_PASSWORD = os.environ.get('gis_password')
+    GIS_URL = os.environ.get('gis_url')
     

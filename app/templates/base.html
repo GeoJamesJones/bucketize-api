@@ -37,6 +37,19 @@
                         </li>
                     </ul>
 
+                <ul class="nav navbar-nav navbar-left">
+                    <li class="dropdown">
+                            <button class="navbar dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Admin
+                            </button>
+                            <button class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="{{ url_for('check_broken_items') }}">Check for Broken Links</a><br>
+                                <a class="dropdown-item" href="{{ url_for('check_federation_status') }}">Check Federation Status</a><br>
+                                <a class="dropdown-item" href="{{ url_for('form_get_users') }}">Get Portal Users</a><br>
+                            </button>
+                        </li>
+                    </ul>
+
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_anonymous %}
                     <li><a href="{{ url_for('login') }}">Login</a></li>
