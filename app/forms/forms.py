@@ -42,3 +42,11 @@ class UploadShapes(FlaskForm):
     myChoices = [('Shapefile', 'Shapefile'), ('Elevation', 'Elevation Data')]
     datatype = SelectField(u'Field name', choices=myChoices)
     submit = SubmitField('Upload File')
+
+class UploadImagery(FlaskForm):
+    upload = FileField('ZIP File: ', validators=[
+        FileRequired()
+    ])
+    myChoices = [('cadrg', 'CADRG/ECRG'), ('cib', 'CIB'), ('imagery', 'Imagery')]
+    datatype = SelectField(u'Field name', choices=myChoices)
+    submit = SubmitField('Upload File')

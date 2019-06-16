@@ -9,8 +9,8 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 
 from app import app, db
-from app.scripts import process_netowl
-from app.forms.forms import LoginForm, RegistrationForm, UploadForm
+from app.scripts import process_netowl, unzip, move_files
+from app.forms.forms import LoginForm, RegistrationForm, UploadForm, UploadShapes, UploadImagery
 from app.models.models import User, Post, NetOwl_Entity
 
 from config import Config
@@ -79,6 +79,7 @@ def user(username):
     return render_template('user.html', user=user, posts=posts)
 
 @app.route('/upload', methods=['GET', 'POST'])
+@login_required
 def upload():
     form = UploadForm()
     if form.validate_on_submit():
@@ -136,6 +137,7 @@ def upload():
     return render_template('upload.html', form=form)
 
 @app.route('/uploads/shapes', methods=['POST', 'GET'])
+@login_required
 def form_upload_shapes():
     form = UploadShapes()
     if form.validate_on_submit():
@@ -172,4 +174,68 @@ def form_upload_shapes():
 
             #return jsonify(copied_shapes)
             return render_template('job_results.html', job=copied_elev)
+    return render_template('upload.html', form=form)
+
+@app.route('/uploads/imagery', methods=['POST', 'GET'])
+@login_required
+def form_upload_imagery():
+    form = UploadImagery()
+    if form.validate_on_submit():
+        if form.datatype.data == 'cadrg':
+            f = form.upload.data
+            filename = secure_filename(f.filename)
+            if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], 'cadrg')) == False:
+                os.mkdir(os.path.join(app.config['UPLOAD_FOLDER'], 'cadrg'))
+            f.save(os.path.join(
+                app.config['UPLOAD_FOLDER'], 'cadrg', filename
+            ))
+            post_body = "CADRG: " + filename
+            post = Post(body=post_body, author=current_user)
+            db.session.add(post)
+            db.session.commit()
+            os.mkdir(os.path.join(app.config['CADRG_FINAL_FOLDER'], filename.split(".")[0]))
+            final_folder = os.path.join(app.config['CADRG_FINAL_FOLDER'], filename.split(".")[0])
+            dirname = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], 'cadrg', filename))
+            copied_imagery = move_files.copy_directory(dirname,final_folder, "Upload CADRG")
+
+            #return jsonify(copied_shapes)
+            return render_template('job_results.html', job=copied_imagery)
+        elif form.datatype.data == 'cib':
+            f = form.upload.data
+            filename = secure_filename(f.filename)
+            if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], 'cib')) == False:
+                os.mkdir(os.path.join(app.config['UPLOAD_FOLDER'], 'cib'))
+            f.save(os.path.join(
+                app.config['UPLOAD_FOLDER'], 'cib', filename
+            ))
+            post_body = "CIB: " + filename
+            post = Post(body=post_body, author=current_user)
+            db.session.add(post)
+            db.session.commit()
+            os.mkdir(os.path.join(app.config['CIB_FINAL_FOLDER'], filename.split(".")[0]))
+            final_folder = os.path.join(app.config['CIB_FINAL_FOLDER'], filename.split(".")[0])
+            dirname = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], 'cib', filename))
+            copied_imagery = move_files.copy_directory(dirname,final_folder, "Upload CIB")
+
+            #return jsonify(copied_shapes)
+            return render_template('job_results.html', job=copied_imagery)
+        elif form.datatype.data == 'imagery':
+            f = form.upload.data
+            filename = secure_filename(f.filename)
+            if os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], 'imagery')) == False:
+                os.mkdir(os.path.join(app.config['UPLOAD_FOLDER'], 'imagery'))
+            f.save(os.path.join(
+                app.config['UPLOAD_FOLDER'], 'imagery', filename
+            ))
+            post_body = "Imagery: " + filename
+            post = Post(body=post_body, author=current_user)
+            db.session.add(post)
+            db.session.commit()
+            os.mkdir(os.path.join(app.config['IMAGERY_FINAL_FOLDER'], filename.split(".")[0]))
+            final_folder = os.path.join(app.config['IMAGERY_FINAL_FOLDER'], filename.split(".")[0])
+            dirname = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], 'imagery', filename))
+            copied_imagery = move_files.copy_directory(dirname,final_folder, "Upload Imagery")
+
+            #return jsonify(copied_shapes)
+            return render_template('job_results.html', job=copied_imagery)
     return render_template('upload.html', form=form)
