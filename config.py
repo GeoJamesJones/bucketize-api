@@ -13,4 +13,8 @@ class Config(object):
     CADRG_FINAL_FOLDER = '/Users/jame9353/Documents/temp_data/bucketize/cadrg'
     CIB_FINAL_FOLDER = '/Users/jame9353/Documents/temp_data/bucketize/cib'
     IMAGERY_FINAL_FOLDER = '/Users/jame9353/Documents/temp_data/bucketize/imagery'
+    ELEVATION_MOSAIC = ''
+    CADRG_MOSAIC = ''
+    CIB_MOSAIC = ''
+    IMAGERY_MOSAIC = ''
     

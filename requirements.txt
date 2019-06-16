@@ -3,6 +3,11 @@ appnope==0.1.0
 arcgis==1.6.1
 asn1crypto==0.24.0
 attrs==19.1.0
+azure-cognitiveservices-nspkg==3.0.1
+azure-cognitiveservices-search-entitysearch==1.0.0
+azure-cognitiveservices-search-nspkg==3.0.1
+azure-common==1.1.22
+azure-nspkg==3.0.2
 Babel==2.5.1
 backcall==0.1.0
 beautifulsoup4==4.7.1
@@ -28,6 +33,7 @@ Flask-Mail==0.9.1
 Flask-Migrate==2.4.0
 Flask-Moment==0.7.0
 Flask-SQLAlchemy==2.4.0
+Flask-Uploads==0.2.1
 Flask-WTF==0.14.2
 google==2.0.2
 guess-language==0.2
@@ -36,6 +42,7 @@ ipykernel==5.1.1
 ipython==7.5.0
 ipython-genutils==0.2.0
 ipywidgets==7.4.2
+isodate==0.6.0
 itsdangerous==1.1.0
 jedi==0.13.3
 Jinja2==2.10.1
@@ -52,10 +59,12 @@ matplotlib==3.1.0
 mistune==0.8.4
 mkl-fft==1.0.12
 mkl-random==1.0.2
+msrest==0.6.7
 nbconvert==5.5.0
 nbformat==4.4.0
 notebook==5.7.8
 numpy==1.16.4
+oauthlib==3.0.1
 pandas==0.24.2
 pandocfilters==1.4.2
 parso==0.4.0
@@ -79,6 +88,7 @@ pytz==2019.1
 pyzmq==18.0.0
 redis==3.2.1
 requests==2.21.0
+requests-oauthlib==1.2.0
 rq==1.0
 Send2Trash==1.5.0
 six==1.12.0

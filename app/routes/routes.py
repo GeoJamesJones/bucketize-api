@@ -9,7 +9,7 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 
 from app import app, db
-from app.scripts import process_netowl, unzip, move_files
+from app.scripts import process_netowl, unzip, move_files, consolidate_rasters
 from app.forms.forms import LoginForm, RegistrationForm, UploadForm, UploadShapes, UploadImagery
 from app.models.models import User, Post, NetOwl_Entity
 
@@ -170,7 +170,7 @@ def form_upload_shapes():
             final_folder = app.config['ELEV_FINAL_FOLDER']
             dirname = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], 'elev', filename))
             copied_elev = move_files.copy_directory(dirname,final_folder, "Upload Elevation")
-            #copied_elev = consolidate_elevation.consolidate_elevation(dirname, )
+            #consolidate_rasters.update_mosaic(final_folder, app.config['ELEVATION_MOSAIC'])
 
             #return jsonify(copied_shapes)
             return render_template('job_results.html', job=copied_elev)
@@ -197,6 +197,7 @@ def form_upload_imagery():
             final_folder = os.path.join(app.config['CADRG_FINAL_FOLDER'], filename.split(".")[0])
             dirname = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], 'cadrg', filename))
             copied_imagery = move_files.copy_directory(dirname,final_folder, "Upload CADRG")
+            #consolidate_rasters.update_mosaic(final_folder, app.config['CADRG_MOSAIC'])
 
             #return jsonify(copied_shapes)
             return render_template('job_results.html', job=copied_imagery)
@@ -216,6 +217,7 @@ def form_upload_imagery():
             final_folder = os.path.join(app.config['CIB_FINAL_FOLDER'], filename.split(".")[0])
             dirname = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], 'cib', filename))
             copied_imagery = move_files.copy_directory(dirname,final_folder, "Upload CIB")
+            #consolidate_rasters.update_mosaic(final_folder, app.config['CIB_MOSAIC'])
 
             #return jsonify(copied_shapes)
             return render_template('job_results.html', job=copied_imagery)
@@ -235,6 +237,7 @@ def form_upload_imagery():
             final_folder = os.path.join(app.config['IMAGERY_FINAL_FOLDER'], filename.split(".")[0])
             dirname = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], 'imagery', filename))
             copied_imagery = move_files.copy_directory(dirname,final_folder, "Upload Imagery")
+            #consolidate_rasters.update_mosaic(final_folder, app.config['IMAGERY_MOSAIC'])
 
             #return jsonify(copied_shapes)
             return render_template('job_results.html', job=copied_imagery)
