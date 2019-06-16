@@ -7,7 +7,7 @@ from arcgis.gis import GIS
 from arcgis.mapping import WebMap
 
 from app.scripts.get_broken_links import is_url_reachable, test_urls_in_webmap, handle_unreachable, get_items_to_check
-from app.forms.forms import GetBrokenLinks
+from app.forms.forms import GetBrokenLinks, AddPortalUser
 from app.models.models import Post
 
 import requests
@@ -22,72 +22,6 @@ target_password = os.environ.get('gis_password')
 gis_url = os.environ.get('gis_url')
 
 target_portal = GIS(gis_url, gis_username, target_password)
-
-@app.route('/api/v1.0/add-user', methods=['POST'])
-def add_user():
-    # See if the user has firstName and lastName properties
-
-    try:
-        first_name = request.form['first-name']
-        last_name = request.form['last-name']
-        username = request.form['username']
-        password = request.form['password']
-        email = request.form['email']
-        role = request.form['role']
-        organization = request.form['organization']
-
-        # create user
-        target_user = target_portal.users.create(username, password, first_name, 
-                                                 last_name, email, role)
-
-        if organization == 'EUCOM':
-            group = target_portal.groups.search("DC Crime Analysis")[0]
-            group.add_users(target_user.username)
-
-        # update user properties
-        return "{} successfully added!".format(username)
-    
-    except Exception as e:
-        return str(e)
-
-@app.route('/api/v1.0/get-users', methods=['GET'])
-def get_users():
-    try:
-        users = {}
-        source_users = target_portal.users.search('!esri_ & !admin')
-        for user in source_users:
-            users[user.username] = user.role
-
-        return jsonify(users)
-        
-    except Exception as e:
-        return str(e)
-
-@app.route('/api/v1.0/get-groups', methods=['GET'])
-def get_groups():
-    try:
-        groups = {}
-        source_groups = target_portal.groups.search("!owner:esri_* & !Basemaps")
-        for group in source_groups:
-            groups[group.title] = group.owner
-
-        return jsonify(groups)
-        
-    except Exception as e:
-        return str(e)
-
-@app.route('/api/v1.0/remove-user', methods=['DELETE'])
-def remove_user():
-    try:
-        target_user = target_portal.users.get(request.form['username'])
-        if target_user is not None:
-            print('Deleting user: ' + target_user.fullName)
-            target_user.reassign_to(request.form['reassign-data-to'])
-            target_user.delete()
-        return "Successfully removed {}".format(request.form['username'])
-    except Exception as e:
-        return str(e)
-        #return 'User {} does not exist in Target Portal'.format(request.form['username'])
 
 @app.route('/admin/check-broken-items', methods=['GET', 'POST'])
 @login_required
@@ -176,8 +110,64 @@ def form_get_users():
                 "storageUsage":user.storageUsage,
                 "storageQuota":user.storageQuota
             }
-            print(user)
             users.append(user)
-        return jsonify(users)
+            portal_url = {"name":str(target_portal)}
+
+        post_body = "Query for portal users."
+        post = Post(body=post_body, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        return render_template('get_portal_users_results.html', portal_url=portal_url, users=users)
 
     return render_template('get_portal_users.html', form=form)
+
+@app.route('/admin/create-user', methods=['GET', 'POST'])
+@login_required
+def form_create_user():
+    form = AddPortalUser()
+    if form.validate_on_submit():
+            firstname = form.firstname.data
+            lastname = form.lastname.data
+            username = form.username.data
+            password = form.password.data
+            email = form.email.data
+            role = form.role.data
+            organization = form.organization.data
+            licensepro = form.licensepro.data
+            # create user
+            target_user = target_portal.users.create(username, password, firstname, 
+                                                    lastname, email, role)
+
+            if organization == 'EUCOM':
+                group = target_portal.groups.search("Featured Maps and Apps")[0]
+                group.add_users(target_user.username)
+            
+            if licensepro == 'Yes':
+                pro_license = target_portal.admin.license.get('ArcGIS Pro')
+                pro_license.assign(username=username, entitlements='desktopBasicN')
+
+            users = []
+
+            source_users = target_portal.users.search(username)
+
+            for user in source_users:
+                user = {
+                    "username":user.username,
+                    "firstname":user.firstName,
+                    "lastname":user.lastName,
+                    "email":user.email,
+                    "licensetype":user.userLicenseTypeId,
+                    "role":user.role,
+                    "storageUsage":user.storageUsage,
+                    "storageQuota":user.storageQuota
+                }
+                users.append(user)
+            
+            portal_url = {"name":str(target_portal)}
+
+            post_body = "Created Portal User."
+            post = Post(body=post_body, author=current_user)
+            db.session.add(post)
+            db.session.commit()
+            return render_template('get_portal_users_results.html', portal_url=portal_url, users=users)
+    return render_template('create_portal_user.html', form=form)

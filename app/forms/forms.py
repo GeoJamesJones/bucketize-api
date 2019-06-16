@@ -53,3 +53,19 @@ class UploadImagery(FlaskForm):
 
 class GetBrokenLinks(FlaskForm):
     submit = SubmitField('Submit')
+
+class AddPortalUser(FlaskForm):
+    firstname = StringField('First Name', validators=[DataRequired()])
+    lastname = StringField('Last Name', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField(
+        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    roleChoices = [('org_admin', 'Administrator'), ('org_publisher', 'Publisher'), ('org_user', 'User')]
+    role = SelectField(u'Role', choices=roleChoices)
+    orgChoices = [('AFRICOM', 'AFRICOM'),('CENTCOM', 'CENTCOM'),('EUCOM', 'EUCOM'),('PACOM', 'PACOM')]
+    organization = SelectField(u'Organization', choices=orgChoices)
+    licenseChoices = [('Yes', 'Yes'),('No', 'No')]
+    licensepro = SelectField(u'License ArcGIS Pro?', choices=licenseChoices)
+    submit = SubmitField('Submit')
