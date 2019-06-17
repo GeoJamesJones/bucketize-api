@@ -24,6 +24,16 @@
       height: 100%;
       width: 100%;
     }
+
+    .panel-body {
+      width: 350px;
+    }
+    .esri-coordinate-conversion__conversions-view {
+      width: 350px;
+    }
+    #coordconvDiv {
+      right: 10px;
+    }
   </style>
 {% endblock %}
 
@@ -48,6 +58,7 @@
             <li><a role="menuitem" tabindex="0" data-target="#panelInfo" aria-haspopup="true"><span class="glyphicon glyphicon-info-sign"></span> About</a></li>
             <li><a role="menuitem" tabindex="0" href="#" data-target="#panelLegend" aria-haspopup="true"><span class="glyphicon glyphicon-list-alt"></span> Legend</a></li>
             <li><a role="menuitem" tabindex="0" href="#" data-target="#panelCC" aria-haspopup="true"><span class="glyphicon glyphicon-list-alt"></span> Coordinate Conversion</a></li>
+            <li><a role="menuitem" tabindex="0" href="#" data-target="#panelAdd" aria-haspopup="true"><span class="glyphicon glyphicon-list-alt"></span> Add Layer</a></li>
             <li><a role="menuitem" tabindex="0" href="#" id="calciteToggleNavbar" aria-haspopup="true"><span class="glyphicon glyphicon-fullscreen"></span> Full Map</a></li>
           </ul>
         </div>
@@ -58,7 +69,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="{{ url_for('index') }}">WDC Integration API</a>
+        <a class="navbar-brand" href="{{ url_for('index') }}">Ease of Use Application</a>
         <!-- Nav -->
         <ul class="nav navbar-nav calcite-nav">
           <li>
@@ -144,6 +155,27 @@
             </div>
           </div>
         </div>
+
+        <!-- Panel - Add Layer -->
+        <div id="panelAdd" class="panel collapse">
+          <div id="headingAdd" class="panel-heading" role="tab">
+            <div class="panel-title">
+              <a class="panel-toggle" role="button" data-toggle="collapse" href="#collapseAdd" aria-expanded="false" aria-controls="collapseAdd"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span><span class="panel-label">Add Layer</span></a> 
+              <a class="panel-close" role="button" data-toggle="collapse" tabindex="0" href="#panelAdd"><span class="esri-icon esri-icon-close" aria-hidden="true"></span></a> 
+            </div>
+          </div>
+          <div id="collapseAdd" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingAdd">
+            <div class="panel-body">            
+              <div id="addDiv">
+                <label for="serviceURL" class="col-xs-4 control-label">Service URL:</label>
+                <div class="col-xs-8">
+                    <input type="text" class="form-control" id="serviceURL" placeholder="Please enter a service URL" />
+                </div>
+                <button type="submit" class="btn-primary" id="addSubmit">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
     
       </div>
     
@@ -171,6 +203,7 @@
           // ArcGIS
           "esri/WebMap",
           "esri/views/MapView",
+          "esri/layers/MapImageLayer",
     
           // Widgets
           "esri/widgets/Home",
@@ -179,9 +212,9 @@
           "esri/widgets/Search",
           "esri/widgets/Legend",
           "esri/widgets/BasemapToggle",
+          "esri/widgets/CoordinateConversion",
           "esri/widgets/ScaleBar",
           "esri/widgets/Attribution",
-          "esri/widgets/CoordinateConversion",
     
           // Bootstrap
           "bootstrap/Collapse",
@@ -192,8 +225,12 @@
           // Calcite Maps ArcGIS Support
           "calcite-maps/calcitemaps-arcgis-support-v0.10",
     
+          // dojo
+          "dijit/registry",
+          "dojo/on",
+          "dojo/dom",
           "dojo/domReady!"
-          ], function(WebMap, MapView, Home, Zoom, Compass, Search, Legend, BasemapToggle, CoordinateConversion, ScaleBar, Attribution,Collapse, Dropdown, CalciteMaps, CalciteMapArcGISSupport) {
+          ], function(WebMap, MapView, MapImageLayer, Home, Zoom, Compass, Search, Legend, BasemapToggle, CoordinateConversion, ScaleBar, Attribution, Collapse, Dropdown, CalciteMaps, CalciteMapArcGISSupport, registry, on, dom) {
     
           /******************************************************************
            *
@@ -222,13 +259,26 @@
           mapView.when(function(){
             CalciteMapArcGISSupport.setPopupPanelSync(mapView);
           });
+
+          on(dom.byId("addSubmit"), "click", getValue);
+
+          function getValue(){
+            var layerURL = dojo.byId("serviceURL").value;
+            var newLayer = new MapImageLayer({
+              url: layerURL
+            });
+            map.add(newLayer);
+            newLayer.when(function() {
+              mapView.goTo(newLayer.fullExtent);
+            });
+          }
     
           // Search - add to navbar
-          var searchWidget = new Search({
-            container: "searchWidgetDiv",
-            view: mapView
-          });
-          CalciteMapArcGISSupport.setSearchExpandEvents(searchWidget);
+          // var searchWidget = new Search({
+          //   container: "searchWidgetDiv",
+          //   view: mapView
+          // });
+          // CalciteMapArcGISSupport.setSearchExpandEvents(searchWidget);
     
           // Map widgets
           var home = new Home({
@@ -255,7 +305,7 @@
           var scaleBar = new ScaleBar({
             view: mapView
           });
-          mapView.ui.add(scaleBar, "bottom-left");
+          mapView.ui.add(scaleBar, "bottom-right");
     
           var attribution = new Attribution({
             view: mapView
