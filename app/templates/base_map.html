@@ -203,7 +203,7 @@
           // ArcGIS
           "esri/WebMap",
           "esri/views/MapView",
-          "esri/layers/FeatureLayer",
+          "esri/layers/MapImageLayer",
     
           // Widgets
           "esri/widgets/Home",
@@ -230,7 +230,7 @@
           "dojo/on",
           "dojo/dom",
           "dojo/domReady!"
-          ], function(WebMap, MapView, FeatureLayer, Home, Zoom, Compass, Search, Legend, BasemapToggle, CoordinateConversion, ScaleBar, Attribution, Collapse, Dropdown, CalciteMaps, CalciteMapArcGISSupport, registry, on, dom) {
+          ], function(WebMap, MapView, MapImageLayer, Home, Zoom, Compass, Search, Legend, BasemapToggle, CoordinateConversion, ScaleBar, Attribution, Collapse, Dropdown, CalciteMaps, CalciteMapArcGISSupport, registry, on, dom) {
     
           /******************************************************************
            *
@@ -264,7 +264,7 @@
 
           function getValue(){
             var layerURL = dojo.byId("serviceURL").value;
-            var newLayer = new FeatureLayer({
+            var newLayer = new MapImageLayer({
               url: layerURL
             });
             map.add(newLayer);
