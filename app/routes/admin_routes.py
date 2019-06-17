@@ -171,3 +171,44 @@ def form_create_user():
             db.session.commit()
             return render_template('get_portal_users_results.html', portal_url=portal_url, users=users)
     return render_template('create_portal_user.html', form=form)
+
+@app.route('/admin/get-groups', methods=['GET', 'POST'])
+def form_get_groups():
+    form = GetBrokenLinks()
+    if form.validate_on_submit():
+        try:
+            groups = []
+            source_groups = target_portal.groups.search("!owner:esri_* & !Basemaps")
+            for group in source_groups:
+                group_members = group.get_members()
+                group_content = group.content()
+                content = []
+                for cont in group_content:
+                    c = {
+                        "title":cont['title'],
+                        "type":cont['type'],
+                        "numViews":cont['numViews']
+                    }
+                    content.append(c)
+                group_info = {
+                    "name":group.title,
+                    "owner":group_members['owner'],
+                    "admins":group_members['admins'],
+                    "users":group_members['users'],
+                    "content":content
+                }
+
+                groups.append(group_info)
+
+            portal_url = {"name":str(target_portal)}
+
+            post_body = "Query for Portal Groups."
+            post = Post(body=post_body, author=current_user)
+            db.session.add(post)
+            db.session.commit()    
+
+            return render_template('get_portal_groups_results.html', portal_url=portal_url, groups=groups)
+            
+        except Exception as e:
+            return str(e)
+    return render_template('get_portal_groups.html', form=form)
