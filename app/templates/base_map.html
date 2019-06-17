@@ -24,6 +24,16 @@
       height: 100%;
       width: 100%;
     }
+
+    .panel-body {
+      width: 350px;
+    }
+    .esri-coordinate-conversion__conversions-view {
+      width: 350px;
+    }
+    #coordconvDiv {
+      right: 10px;
+    }
   </style>
 {% endblock %}
 
@@ -58,7 +68,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="{{ url_for('index') }}">WDC Integration API</a>
+        <a class="navbar-brand" href="{{ url_for('index') }}">Ease of Use Application</a>
         <!-- Nav -->
         <ul class="nav navbar-nav calcite-nav">
           <li>
@@ -179,9 +189,9 @@
           "esri/widgets/Search",
           "esri/widgets/Legend",
           "esri/widgets/BasemapToggle",
+          "esri/widgets/CoordinateConversion",
           "esri/widgets/ScaleBar",
           "esri/widgets/Attribution",
-          "esri/widgets/CoordinateConversion",
     
           // Bootstrap
           "bootstrap/Collapse",
@@ -193,7 +203,7 @@
           "calcite-maps/calcitemaps-arcgis-support-v0.10",
     
           "dojo/domReady!"
-          ], function(WebMap, MapView, Home, Zoom, Compass, Search, Legend, BasemapToggle, CoordinateConversion, ScaleBar, Attribution,Collapse, Dropdown, CalciteMaps, CalciteMapArcGISSupport) {
+          ], function(WebMap, MapView, Home, Zoom, Compass, Search, Legend, BasemapToggle, CoordinateConversion, ScaleBar, Attribution, Collapse, Dropdown, CalciteMaps, CalciteMapArcGISSupport) {
     
           /******************************************************************
            *
@@ -224,11 +234,11 @@
           });
     
           // Search - add to navbar
-          var searchWidget = new Search({
-            container: "searchWidgetDiv",
-            view: mapView
-          });
-          CalciteMapArcGISSupport.setSearchExpandEvents(searchWidget);
+          // var searchWidget = new Search({
+          //   container: "searchWidgetDiv",
+          //   view: mapView
+          // });
+          // CalciteMapArcGISSupport.setSearchExpandEvents(searchWidget);
     
           // Map widgets
           var home = new Home({
@@ -255,7 +265,7 @@
           var scaleBar = new ScaleBar({
             view: mapView
           });
-          mapView.ui.add(scaleBar, "bottom-left");
+          mapView.ui.add(scaleBar, "bottom-right");
     
           var attribution = new Attribution({
             view: mapView
