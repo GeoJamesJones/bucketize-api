@@ -62,10 +62,39 @@ class AddPortalUser(FlaskForm):
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    roleChoices = [('org_admin', 'Administrator'), ('org_publisher', 'Publisher'), ('org_user', 'User')]
+    roleChoices = [('org_admin', 'Administrator'), 
+                    ('org_publisher', 'Publisher'), 
+                    ('org_user', 'User')]
     role = SelectField(u'Role', choices=roleChoices)
     orgChoices = [('AFRICOM', 'AFRICOM'),('CENTCOM', 'CENTCOM'),('EUCOM', 'EUCOM'),('PACOM', 'PACOM')]
     organization = SelectField(u'Organization', choices=orgChoices)
     licenseChoices = [('Yes', 'Yes'),('No', 'No')]
     licensepro = SelectField(u'License ArcGIS Pro?', choices=licenseChoices)
     submit = SubmitField('Submit')
+
+class UploadCMB(FlaskForm):
+    upload = FileField('CMB ZIP File', validators=[
+        FileRequired()
+    ])
+    submit = SubmitField('Upload File')
+
+class QueryWeb(FlaskForm):
+    query = StringField('Query String', validators=[DataRequired()])
+    choices = [
+        ('warehouses', 'Warehouses'),
+        ('cfdc', 'Commercial Food Distribution Center'),
+        ('farm', 'Farms or Ranches'),
+        ('fd', 'Food Distribution Center'),
+        ('fpc', 'Food Production Center'),
+        ('fr', 'Food Retail'),
+        ('gs', 'Grain Storage'),
+        ('gensta', 'Generation Station'),
+        ('ngf', 'Natural Gas Facility'),
+        ('pf', 'Petroleum Facility'),
+        ('prf', 'Propane Facility'),
+        ('gsi', 'Government Site Infrastructure'),
+        ('hosptital', 'Hospitals'),
+        ('tv', 'Television Stations')
+    ]
+    category = SelectField(u'Category', choices=choices)
+    submit = SubmitField('Upload File')

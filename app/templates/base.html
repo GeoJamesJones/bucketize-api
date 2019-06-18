@@ -33,6 +33,7 @@
                                 <a class="dropdown-item" href="{{ url_for('upload') }}">Upload Document</a><br>
                                 <a class="dropdown-item" href="{{ url_for('form_upload_shapes') }}">Upload Files</a><br>
                                 <a class="dropdown-item" href="{{ url_for('form_upload_imagery') }}">Upload Raster</a><br>
+                                <a class="dropdown-item" href="{{ url_for('form_upload_cmb') }}">Upload CMB</a><br>
                             </button>
                         </li>
                     </ul>
@@ -51,6 +52,17 @@
                             </button>
                         </li>
                     </ul>
+
+                    <ul class="nav navbar-nav navbar-left">
+                        <li class="dropdown">
+                                <button class="navbar dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Query
+                                </button>
+                                <button class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="{{ url_for('form_query_web') }}">Query Web for Spatial Content</a><br>
+                                </button>
+                            </li>
+                        </ul>
 
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_anonymous %}
