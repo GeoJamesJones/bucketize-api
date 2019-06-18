@@ -359,6 +359,10 @@ def form_upload_cmb():
         #subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\update_footprints.bat'])
         #subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\start_service.bat'])
 
+        post_body = "CMB File: " + filename
+        post = Post(body=post_body, author=current_user)
+        db.session.add(post)
+        db.session.commit()
         return render_template('upload_cmb_results.html')
     return render_template('upload.html', form=form)
 
@@ -372,6 +376,10 @@ def form_query_web():
         query_results = bucketizebing.main(query, category)
         dashboard = app.config['CA_QUERY_DASHBOARD']
         #return jsonify(query_results)
+        post_body = "Query Web: " + filename
+        post = Post(body=post_body, author=current_user)
+        db.session.add(post)
+        db.session.commit()
         return render_template('query_web_results.html', dashboard=dashboard)
     return render_template('query_web.html', form=form)
 
