@@ -2,6 +2,7 @@ import os
 import urllib3
 import json
 import shutil
+import subprocess
 
 from datetime import datetime
 from flask import jsonify, request, send_from_directory, flash, redirect, url_for, render_template
@@ -286,7 +287,7 @@ def form_upload_cmb():
                 if 'CIB' in root:
                     CIB = True
                     src_file = os.path.join(root, file)
-                    cib_dirs = root.split("Products/CIB")[1]
+                    cib_dirs = root.split("Products\CIB")[1]
                     final_cib_dir = app.config['CIB_FINAL_FOLDER'] + cib_dirs
                     if os.path.exists(final_cib_dir) == False:
                         try:
@@ -336,16 +337,29 @@ def form_upload_cmb():
                     
                     shutil.copy(src_file, final_naip_dir)
 
+        print("Stopping services...")
+        #subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\stop_service.bat'])
         if IMAGERY:
-            print("There was imagery.")
+            if os.path.exists(app.config['IMAGERY_FINAL_FOLDER']):
+                subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\update_imagery_mosaic.bat'])
         if CADRG:
-            print("There was CADRG.")
+            if os.path.exists(app.config['CADRG_FINAL_FOLDER']):
+                subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\update_cadrg_mosaic.bat'])
         if DTD:
-            print("There was elevation data.")
+            if os.path.exists(os.path.join(app.config['ELEV_FINAL_FOLDER'], 'dted1')):
+                subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\update_dted1_mosaic.bat']) 
+            if os.path.exists(os.path.join(app.config['ELEV_FINAL_FOLDER'], 'dted2')):
+                subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\update_dted2_mosaic.bat'])
         if CIB:
-            print("There was CIB.")
+             if os.path.exists(app.config['CIB_FINAL_FOLDER']):
+                subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\update_cib_mosaic.bat'])
 
-        return "Success!"
+        print("Updating footprints layer...")
+        print("Restarting services...")
+        #subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\update_footprints.bat'])
+        #subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\start_service.bat'])
+
+        return render_template('upload_cmb_results.html')
     return render_template('upload.html', form=form)
 
 @app.route('/query/web', methods=['POST', 'GET'])
@@ -361,7 +375,6 @@ def form_query_web():
         return render_template('query_web_results.html', dashboard=dashboard)
     return render_template('query_web.html', form=form)
 
-@app.route('/query/dashboard')
-def www():
-    dashboard = app.config['CA_QUERY_DASHBOARD']
-    return render_template(dashboard)
+@app.route('/uploads/test-cmb')
+def form_test_cmb():
+    return render_template('upload_cmb_results.html')
