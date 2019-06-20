@@ -81,20 +81,20 @@ class UploadCMB(FlaskForm):
 class QueryWeb(FlaskForm):
     query = StringField('Query String', validators=[DataRequired()])
     choices = [
-        ('warehouses', 'Warehouses'),
-        ('cfdc', 'Commercial Food Distribution Center'),
-        ('farm', 'Farms or Ranches'),
-        ('fd', 'Food Distribution Center'),
-        ('fpc', 'Food Production Center'),
-        ('fr', 'Food Retail'),
-        ('gs', 'Grain Storage'),
-        ('gensta', 'Generation Station'),
-        ('ngf', 'Natural Gas Facility'),
-        ('pf', 'Petroleum Facility'),
-        ('prf', 'Propane Facility'),
-        ('gsi', 'Government Site Infrastructure'),
-        ('hosptital', 'Hospitals'),
-        ('tv', 'Television Stations')
+        ('Warehouse/Storage Facility', 'Warehouses'),
+        ('Commercial Food Distribution Center', 'Commercial Food Distribution Center'),
+        ('Farm/Ranch', 'Farms or Ranches'),
+        ('Food Distribution Center', 'Food Distribution Center'),
+        ('Food Production Center', 'Food Production Center'),
+        ('Food Retail', 'Food Retail'),
+        ('Food Retail', 'Grain Storage'),
+        ('Generation Station', 'Generation Station'),
+        ('Natural Gas Facility', 'Natural Gas Facility'),
+        ('Petroleum Facility', 'Petroleum Facility'),
+        ('Propane Facility', 'Propane Facility'),
+        ('Government Site Infrastructure', 'Government Site Infrastructure'),
+        ('Medical Treatment Facility (Hospital)', 'Hospitals'),
+        ('Civilian Television', 'Television Stations')
     ]
     category = SelectField(u'Category', choices=choices)
     submit = SubmitField('Upload File')

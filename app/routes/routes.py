@@ -376,7 +376,7 @@ def form_query_web():
         query_results = bucketizebing.main(query, category)
         dashboard = app.config['CA_QUERY_DASHBOARD']
         #return jsonify(query_results)
-        post_body = "Query Web: " + filename
+        post_body = "Query Web: " + query
         post = Post(body=post_body, author=current_user)
         db.session.add(post)
         db.session.commit()

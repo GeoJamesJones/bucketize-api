@@ -53,12 +53,14 @@ class NetOwl_Entity:
             self.pre_text = value_dict['head']
         if 'tail' in value_dict:
             self.post_text = value_dict['tail']
-        if 'doc_link' in value_dict:
-            self.doc_link = value_dict['doc_link']
+        if 'url' in value_dict:
+            self.doc_link = value_dict['url']
         if 'query' in value_dict:
             self.query = value_dict['query']
         if 'category' in value_dict:
             self.category = value_dict['category']
+        if 'url' in value_dict['url']:
+            self.catgory = value_dict['url']
 
         if 'geo_entity' in value_dict:
             self.geo_entity = value_dict['geo_entity']
@@ -251,7 +253,7 @@ def process_netowl_json(document_file, json_data, web_url, query_string, categor
                         base_entity['head'] = get_head(content, int(em['head']), 255)
                     if 'tail' in em:
                         base_entity['tail'] = get_tail(content, int(em['tail']), 255)
-
+                #print(web_url)
                 base_entity['url'] = web_url
                 base_entity['query'] = query_string
                 base_entity['category'] = category
@@ -307,13 +309,12 @@ def main(query, category):
 
                     entity_list = process_netowl_json(filename, data, value['url'], term, category, value['dateLastCrawled'], value['snippet'], value['language'])
 
-                    
-                    
                     for entity in entity_list:
                         if entity.geo_entity == True:
                             if entity.geo_type == 'coordinate' or entity.geo_type == 'address' or entity.geo_subtype == 'city':
                                 spatial_entities.append(vars(entity))
                                 post_to_geoevent(json.dumps(vars(entity)), geoevent_url)
+                                #print(vars(entity))
                 
                 os.remove(text_file_path)
                 os.remove(text_file_path + ".json")
@@ -345,9 +346,10 @@ def main(query, category):
                             if entity.geo_type == 'coordinate' or entity.geo_type == 'address' or entity.geo_subtype == 'city':
                                 spatial_entities.append(vars(entity))
                                 post_to_geoevent(json.dumps(vars(entity)), geoevent_url)
+                                #print(vars(entity))
                                 entity_count +=1
-                os.remove(text_file_path)
-                os.remove(text_file_path + ".json")
+
+                
                 #print("-------------------------------------------------------")
 
                 
