@@ -256,10 +256,53 @@
               ui: {components: []}
             });
 
+            var urls = {
+              "cmb_ScannedMaps" : "https://localhost:6443/arcgis/rest/services/ScannedMaps/cmb_ScannedMaps/MapServer/3"
+            };
+
+            var template = {
+                title: "Service Name: {Name}" ,
+                //Fix for URLS in popup
+                content: "URL: <a href=\"{URLs}\">{URLs}</a>"
+            };
+
             var scannedMaps = new FeatureLayer({
                 url:
-                "https://localhost:6443/arcgis/rest/services/Footprints/MapServer/0"
+                "https://localhost:6443/arcgis/rest/services/ScannedMaps/cmb_ScannedMaps/MapServer/1", 
+                popupTemplate: template
             });
+
+            var CIB = new FeatureLayer({
+                url:
+                "https://localhost:6443/arcgis/rest/services/Imagery/CIB_5/MapServer/1",
+                popupTemplate: template
+            });
+
+            var dted1 = new FeatureLayer({
+                url:
+                "https://localhost:6443/arcgis/rest/services/Imagery/DTED_1/MapServer/1",
+                popupTemplate: template
+            });
+
+            var dted2 = new FeatureLayer({
+                url:
+                "https://localhost:6443/arcgis/rest/services/Imagery/DTED_2/MapServer/1",
+                popupTemplate: template
+            });
+
+            var imagery = new FeatureLayer({
+                url:
+                "https://localhost:6443/arcgis/rest/services/Imagery/cmb_Imagery/MapServer/1",
+                popupTemplate: template
+            });
+
+            map.add(imagery);
+
+            map.add(dted2);
+
+            map.add(dted1);
+            
+            map.add(CIB);
 
             map.add(scannedMaps);
     

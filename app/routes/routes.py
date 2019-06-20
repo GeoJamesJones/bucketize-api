@@ -148,14 +148,16 @@ def form_upload_shapes():
             f = form.upload.data
             filename = secure_filename(f.filename)
             f.save(os.path.join(
-                app.config['UPLOAD_FOLDER'], 'shapefiles', filename
+                app.config['UPLOAD_FOLDER'], filename
             ))
             post_body = "Shapefiles: " + filename
             post = Post(body=post_body, author=current_user)
             db.session.add(post)
             db.session.commit()
             final_folder = app.config['SHAPE_FINAL_FOLDER']
-            dirname = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], 'shapefiles', filename))
+            if os.path.exists(final_folder) == False:
+                os.makedirs(final_folder)
+            dirname = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             copied_shapes = move_files.copy_directory(dirname,final_folder, "Upload Shapefiles")
 
             #return jsonify(copied_shapes)
@@ -259,6 +261,7 @@ def form_upload_cmb():
         post_body = "CMB File: " + filename
         post = Post(body=post_body, author=current_user)
         db.session.add(post)
+        db.session.commit()
 
         dirnames = unzip.unzip_file(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         cadrg_files = ['toc', 'gn2', 'jn3', 'ja2', 'mi3', 'on3', 'tp3']
@@ -275,6 +278,20 @@ def form_upload_cmb():
                     CADRG = True
                     src_file = os.path.join(root, file)
                     cadrg_dirs = root.split("CADRG")[1]
+                    final_cadrg_dir = app.config['CADRG_FINAL_FOLDER'] + cadrg_dirs
+                    if os.path.exists(final_cadrg_dir) == False:
+                        try:
+                            os.makedirs(final_cadrg_dir)
+                        except:
+                            pass
+                    
+                    shutil.copy(src_file, final_cadrg_dir)
+
+                if 'ECRG' in root:
+                    CADRG = True
+                    src_file = os.path.join(root, file)
+
+                    cadrg_dirs = root.split("ECRG")[1]
                     final_cadrg_dir = app.config['CADRG_FINAL_FOLDER'] + cadrg_dirs
                     if os.path.exists(final_cadrg_dir) == False:
                         try:
@@ -337,7 +354,7 @@ def form_upload_cmb():
                     
                     shutil.copy(src_file, final_naip_dir)
 
-        print("Stopping services...")
+        
         #subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\stop_service.bat'])
         if IMAGERY:
             if os.path.exists(app.config['IMAGERY_FINAL_FOLDER']):
@@ -353,16 +370,13 @@ def form_upload_cmb():
         if CIB:
              if os.path.exists(app.config['CIB_FINAL_FOLDER']):
                 subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\update_cib_mosaic.bat'])
-
+        
+        print("Stopping services...")
         print("Updating footprints layer...")
         print("Restarting services...")
         #subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\update_footprints.bat'])
         #subprocess.call([r'C:\Users\localadmin\Documents\GitHub\bucketize-api\app\scripts\batch\start_service.bat'])
 
-        post_body = "CMB File: " + filename
-        post = Post(body=post_body, author=current_user)
-        db.session.add(post)
-        db.session.commit()
         return render_template('upload_cmb_results.html')
     return render_template('upload.html', form=form)
 
@@ -373,13 +387,8 @@ def form_query_web():
     if form.validate_on_submit():
         query = form.query.data
         category = form.category.data
-        query_results = bucketizebing.main(query, category)
+        bucketizebing.main(query, category)
         dashboard = app.config['CA_QUERY_DASHBOARD']
-        #return jsonify(query_results)
-        post_body = "Query Web: " + query
-        post = Post(body=post_body, author=current_user)
-        db.session.add(post)
-        db.session.commit()
         return render_template('query_web_results.html', dashboard=dashboard)
     return render_template('query_web.html', form=form)
 
