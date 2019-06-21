@@ -79,7 +79,7 @@ class UploadCMB(FlaskForm):
     submit = SubmitField('Upload File')
 
 class QueryWeb(FlaskForm):
-    query = StringField('Query String', validators=[DataRequired()])
+    query = StringField('Query Keywords', validators=[DataRequired()])
     choices = [
         ('Warehouse/Storage Facility', 'Warehouses'),
         ('Commercial Food Distribution Center', 'Commercial Food Distribution Center'),
@@ -97,4 +97,8 @@ class QueryWeb(FlaskForm):
         ('Civilian Television', 'Television Stations')
     ]
     category = SelectField(u'Category', choices=choices)
-    submit = SubmitField('Upload File')
+    submit = SubmitField('Submit')
+
+class QueryNews(FlaskForm):
+    query = StringField('Query Keywords', validators=[DataRequired()])
+    submit = SubmitField('Submit')

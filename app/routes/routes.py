@@ -11,9 +11,9 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 
 from app import app, db
-from app.scripts import process_netowl, unzip, move_files, bucketizebing
+from app.scripts import process_netowl, unzip, move_files, bucketizebing, bucketizenews
 #from app.scripts import consolidate_rasters
-from app.forms.forms import LoginForm, RegistrationForm, UploadForm, UploadShapes, UploadImagery, UploadCMB, QueryWeb
+from app.forms.forms import LoginForm, RegistrationForm, UploadForm, UploadShapes, UploadImagery, UploadCMB, QueryWeb, QueryNews
 from app.models.models import User, Post, NetOwl_Entity
 
 from config import Config
@@ -391,6 +391,17 @@ def form_query_web():
         dashboard = app.config['CA_QUERY_DASHBOARD']
         return render_template('query_web_results.html', dashboard=dashboard)
     return render_template('query_web.html', form=form)
+
+@app.route('/query/news', methods=['POST', 'GET'])
+@login_required
+def form_query_news():
+    form = QueryNews()
+    if form.validate_on_submit():
+        query = form.query.data
+        news = bucketizenews.main(query, "News Query")
+        dashboard = ""
+        return render_template('query_news_results.html', dashboard=dashboard)
+    return render_template('query_news.html', form=form)
 
 @app.route('/uploads/test-cmb')
 def form_test_cmb():
