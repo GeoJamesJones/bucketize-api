@@ -34,5 +34,5 @@ if not app.debug:
     app.logger.setLevel(logging.INFO)
     app.logger.info('Microblog startup')
 
-from app.routes import routes, admin_routes, nlp_routes, errors, api_routes
+from app.routes import routes, nlp_routes, errors
 from app.models import models
