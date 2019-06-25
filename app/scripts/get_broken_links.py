@@ -10,9 +10,12 @@ from datetime import timedelta
 
 log = logging.getLogger()
 
-gis_username = os.environ.get('gis_username')
-target_password = os.environ.get('gis_password')
-gis_url = os.environ.get('gis_url')
+try:
+    gis_username = os.environ.get('gis_username')
+    target_password = os.environ.get('gis_password')
+    gis_url = os.environ.get('gis_url')
+except:
+    pass
 
 target_portal = GIS(gis_url, gis_username, target_password)
 

@@ -1,4 +1,4 @@
-{% extends 'bootstrap/base.html' %}
+<!--{% extends 'bootstrap/base.html' %}-->
 
 {% block head %}
   <meta charset="utf-8">
@@ -8,13 +8,13 @@
   <title>Ease of Use Tool</title>
 
   <!-- Calcite Maps Bootstrap -->
-  <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-bootstrap.min-v0.10.css">
+  <link rel="stylesheet" href="http://localhost/arcgis_js_api/library/4.11/dojo/Calcite-Maps/dist/css/calcite-maps-bootstrap.min-v0.10.css">
 
   <!-- Calcite Maps -->
-  <link rel="stylesheet" href="https://esri.github.io/calcite-maps/dist/css/calcite-maps-arcgis-4.x.min-v0.10.css">
+  <link rel="stylesheet" href="http://localhost/arcgis_js_api/library/4.11/dojo/Calcite-Maps/dist/css/calcite-maps-arcgis-4.x.min-v0.10.css">
 
   <!-- ArcGIS JS 4 -->
-  <link rel="stylesheet" href="https://js.arcgis.com/4.10/esri/css/main.css">
+  <link rel="stylesheet" href="http://localhost/arcgis_js_api/library/4.11/esri/themes/light/main.css">
 
   <style>
     html,
@@ -185,23 +185,23 @@
         var dojoConfig = {
           packages: [{
             name: "bootstrap",
-            location: "https://esri.github.io/calcite-maps/dist/vendor/dojo-bootstrap"
+            location: "http://localhost/arcgis_js_api/library/4.11/dojo/Calcite-Maps/dist/vendor/dojo-bootstrap"
           },
           {
             name: "calcite-maps",
-            location: "https://esri.github.io/calcite-maps/dist/js/dojo"
+            location: "http://localhost/arcgis_js_api/library/4.11/dojo/Calcite-Maps/dist/js/dojo"
           }]
         };
       </script>
     
       <!-- ArcGIS JS 4 -->
-      <script src="https://js.arcgis.com/4.10/"></script>
+      <script src="http://localhost/arcgis_js_api/library/4.11/dojo/dojo.js"></script>
     
       <script>
         
         require([
           // ArcGIS
-          "esri/WebMap",
+          "esri/Map",
           "esri/views/MapView",
           "esri/layers/MapImageLayer",
     
@@ -230,7 +230,7 @@
           "dojo/on",
           "dojo/dom",
           "dojo/domReady!"
-          ], function(WebMap, MapView, MapImageLayer, Home, Zoom, Compass, Search, Legend, BasemapToggle, CoordinateConversion, ScaleBar, Attribution, Collapse, Dropdown, CalciteMaps, CalciteMapArcGISSupport, registry, on, dom) {
+          ], function(Map, MapView, MapImageLayer, Home, Zoom, Compass, Search, Legend, BasemapToggle, CoordinateConversion, ScaleBar, Attribution, Collapse, Dropdown, CalciteMaps, CalciteMapArcGISSupport, registry, on, dom) {
     
           /******************************************************************
            *
@@ -238,11 +238,7 @@
            * 
            ******************************************************************/
     
-           var map = new WebMap({
-              portalItem: {
-                id: "9f91f911f58540ceaac0300c55e18fbb"
-              }
-            });
+           var map = new Map();
             
             // View
             var mapView = new MapView({
@@ -254,7 +250,12 @@
               },
               ui: {components: []}
             });
-    
+            
+            var layer = null,
+            layerUrl = "https://localhost:6443/arcgis/rest/services/SampleWorldCities/MapServer",
+            layer = new MapImageLayer(layerUrl, null);
+            map.layers.add(layer);
+            
           // Popup and panel sync
           mapView.when(function(){
             CalciteMapArcGISSupport.setPopupPanelSync(mapView);

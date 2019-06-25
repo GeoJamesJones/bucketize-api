@@ -38,5 +38,5 @@ if not app.debug:
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('microblog-tasks', connection=app.redis)
 
-from app.routes import routes, admin_routes, nlp_routes, errors, api_routes
+from app.routes import routes, nlp_routes, errors
 from app.models import models
