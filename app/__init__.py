@@ -1,5 +1,6 @@
 import logging
 import os
+import rq
 
 from flask import Flask
 from flask_bootstrap import Bootstrap
@@ -8,6 +9,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 from logging.handlers import RotatingFileHandler
+from redis import Redis
 
 from config import Config
 
@@ -33,6 +35,8 @@ if not app.debug:
 
     app.logger.setLevel(logging.INFO)
     app.logger.info('Microblog startup')
+    app.redis = Redis.from_url(app.config['REDIS_URL'])
+    app.task_queue = rq.Queue('microblog-tasks', connection=app.redis)
 
 from app.routes import routes, admin_routes, nlp_routes, errors, api_routes
 from app.models import models
