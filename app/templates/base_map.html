@@ -204,6 +204,7 @@
           "esri/Map",
           "esri/views/MapView",
           "esri/layers/MapImageLayer",
+          "esri/geometry/Extent",
     
           // Widgets
           "esri/widgets/Home",
@@ -230,7 +231,7 @@
           "dojo/on",
           "dojo/dom",
           "dojo/domReady!"
-          ], function(Map, MapView, MapImageLayer, Home, Zoom, Compass, Search, Legend, BasemapToggle, CoordinateConversion, ScaleBar, Attribution, Collapse, Dropdown, CalciteMaps, CalciteMapArcGISSupport, registry, on, dom) {
+          ], function(Map, MapView, MapImageLayer, Extent, Home, Zoom, Compass, Search, Legend, BasemapToggle, CoordinateConversion, ScaleBar, Attribution, Collapse, Dropdown, CalciteMaps, CalciteMapArcGISSupport, registry, on, dom) {
     
           /******************************************************************
            *
@@ -250,9 +251,17 @@
               },
               ui: {components: []}
             });
+
+            mapView.extent = new Extent({
+              xmin: -136,
+              ymin: 20,
+              xmax: -50,
+              ymax: 55
+            })
             
             var layer = null,
-            layerUrl = "https://localhost:6443/arcgis/rest/services/SampleWorldCities/MapServer",
+            layerUrl = "https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer",
+            //layerUrl = "https://localhost:6443/arcgis/rest/services/SampleWorldCities/MapServer",
             layer = new MapImageLayer(layerUrl, null);
             map.layers.add(layer);
             
